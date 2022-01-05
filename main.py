@@ -42,7 +42,7 @@ class Window:
         self.lecturer_lbl = lecturer_lbl
 
         self.lecturer_text = StringVar()
-        lecturer_entry = Entry(window, width=10, textvariable=self.lecturer_text)
+        lecturer_entry = Entry(window, width=10, textvariable=self.lecturer_text, state=DISABLED)
         lecturer_entry.place(width=150, height=30, x=180, y=100)
         lecturer_entry.focus()
         self.lecturer_entry = lecturer_entry
@@ -78,8 +78,11 @@ class Window:
 
         if self.excel_file_path == '':
             self.excel_file_lbl.configure(text='Документ не выбран', font=("Arial Bold", 16), fg='red', justify='left')
+            self.find_by_lecturer_btn.configure(state=DISABLED)
+            self.lecturer_entry.configure(state=DISABLED)
         else:
             self.find_by_lecturer_btn.configure(state=NORMAL)
+            self.lecturer_entry.configure(state=NORMAL)
             self.api = ExcelApi(self.excel_file_path)
 
             filename = self.excel_file_path.split('/')[-1]
