@@ -60,7 +60,7 @@ class ExcelApi:
 
         return disciplines
 
-    def get_discipline(self, date, lecturer):
+    def get_discipline(self, date, lecturer) -> list:
         res_disciplines = []
 
         if self.disciplines.get(date) is None:
