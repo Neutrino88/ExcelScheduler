@@ -19,7 +19,7 @@ class ExcelApi:
         self.get_dates_with_disciplines()
 
     def get_dates_with_disciplines(self):
-        for i in range(1, 600):
+        for i in range(1, 1200):
             cell = self.sheet.cell(row=i, column=1)
 
             if isinstance(cell.value, datetime):
@@ -52,10 +52,10 @@ class ExcelApi:
 
         disciplines = []
         while col < 300:
-            self.add_discipline(disciplines, 1, row, col)
-            self.add_discipline(disciplines, 2, row + 1, col)
-            self.add_discipline(disciplines, 3, row + 2, col)
-            self.add_discipline(disciplines, 4, row + 3, col)
+            self.add_discipline(disciplines, '1-2', row, col)
+            self.add_discipline(disciplines, '3-4', row + 1, col)
+            self.add_discipline(disciplines, '5-6', row + 2, col)
+            self.add_discipline(disciplines, '7-8', row + 3, col)
             col += 9
 
         return disciplines

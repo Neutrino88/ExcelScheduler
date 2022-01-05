@@ -1,6 +1,7 @@
 import datetime
 from tkinter import *
 from tkinter import ttk
+from functools import partial
 from tkinter import filedialog
 
 from excel_api import ExcelApi
@@ -8,22 +9,35 @@ from excel_api import ExcelApi
 
 class Window:
     def __init__(self):
+        self.width = 824
+        self.height = 400
+
         self.api = None
+        self.current_date = datetime.datetime.today().date()
 
         window = Tk()
         window.title('Расписание занятий')
-        window.geometry('824x400')
+        window.geometry(f"{self.width}x{self.height}")
         self.window = window
 
         # Заголовок
         schedule_lbl = Label(window, text='Расписание занятий', font=('Arial Bold', 16))
-        schedule_lbl.place(relwidth=1, height=30)
+        schedule_lbl.place(width=self.width, height=30)
         self.schedule_lbl = schedule_lbl
 
-        date_string = datetime.datetime.now().strftime('%d.%m.%Y')
+        date_string = self.current_date.strftime('%d.%m.%Y')
         today_lbl = Label(window, text=f"на {date_string}",  font=('Arial Bold', 14))
-        today_lbl.place(relwidth=1, height=30, y=30)
+        today_lbl.place(width=self.width, height=30, y=30)
         self.today_lbl = today_lbl
+
+        # Вчерашнее и завтрашнее числа
+        yesterday_btn = Button(window, text='<', command=partial(self.increase_date, -1), bg='#555', fg='#ccc')
+        yesterday_btn.place(width=20, height=30, x=314, y=30)
+        self.tomorrow_btn = yesterday_btn
+
+        tomorrow_btn = Button(window, text='>', command=partial(self.increase_date, 1), bg='#555', fg='#ccc')
+        tomorrow_btn.place(width=20, height=30, x=490, y=30)
+        self.tomorrow_btn = tomorrow_btn
 
         # Выбранный документ
         self.excel_file_path = ''
@@ -73,6 +87,14 @@ class Window:
 
         window.mainloop()
 
+    def increase_date(self, days):
+        self.current_date += datetime.timedelta(days=days)
+        date_string = self.current_date.strftime('%d.%m.%Y')
+        self.today_lbl.configure(text=f"на {date_string}")
+
+        # Обновляем список дисциплин
+        self.find_by_lecturer()
+
     def select_document(self):
         self.excel_file_path = filedialog.askopenfilename(filetypes=(('Excel files', '*.xlsx;*.xlsm'),))
 
@@ -89,15 +111,13 @@ class Window:
             self.excel_file_lbl.configure(text=filename, font=("Arial Bold", 14), fg='green', justify='left')
 
     def find_by_lecturer(self):
-        date = (datetime.datetime.today() - datetime.timedelta(days=30)).date()
-
         # remove added disciplines
         for i in range(len(self.disciplines_rows)):
             self.disciplines.delete(self.disciplines_rows[i])
         self.disciplines_rows.clear()
 
         # get disciplines of lecturer
-        disciplines = self.api.get_discipline(date, self.lecturer_text.get())
+        disciplines = self.api.get_discipline(self.current_date, self.lecturer_text.get())
         disciplines.sort(key=lambda x: x.number)
 
         for d in disciplines:
