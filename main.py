@@ -94,7 +94,8 @@ class Window:
         self.today_lbl.configure(text=f"на {date_string}")
 
         # Обновляем список дисциплин
-        self.find_by_lecturer()
+        if self.api is not None:
+            self.find_by_lecturer()
 
     def select_document(self):
         self.excel_file_path = filedialog.askopenfilename(filetypes=(('Excel files', '*.xlsx;*.xlsm'),))
