@@ -16,6 +16,7 @@ class Window:
         self.current_date = datetime.datetime.today().date()
 
         window = Tk()
+        window.resizable(width=False, height=False)
         window.title('Расписание занятий')
         window.geometry(f"{self.width}x{self.height}")
         self.window = window
