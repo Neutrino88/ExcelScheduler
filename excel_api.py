@@ -5,7 +5,7 @@ from openpyxl.cell import Cell
 from openpyxl import load_workbook
 
 
-DisciplineType = namedtuple('Discipline', 'number name study_group lecturers rooms')
+DisciplineType = namedtuple('Discipline', 'number name study_group lecturer room')
 
 
 class ExcelApi:
@@ -35,15 +35,17 @@ class ExcelApi:
         name = self.sheet.cell(row=row, column=col).value
         study_group = self.sheet.cell(row=4, column=col).value
 
-        lecturers = [self.sheet.cell(row=row, column=col + 5).value, self.sheet.cell(row=row, column=col + 6).value]
+        lecturer1 = self.sheet.cell(row=row, column=col + 5).value
+        if lecturer1 is not None:
+            room_value = self.sheet.cell(row=row, column=col + 7).value
+            room = room_value if room_value is not None else self.sheet.cell(row=4, column=col + 7).value
+            disciplines.append(DisciplineType(number, name, study_group, lecturer1, room))
 
-        room1_value = self.sheet.cell(row=row, column=col + 7).value
-        room1 = room1_value if room1_value is not None else self.sheet.cell(row=4, column=col + 7).value
-
-        room2_value = self.sheet.cell(row=row, column=col + 8).value
-        room2 = room2_value if room2_value is not None else self.sheet.cell(row=4, column=col + 8).value
-
-        disciplines.append(DisciplineType(number, name, study_group, lecturers, (room1, room2)))
+        lecturer2 = self.sheet.cell(row=row, column=col + 6).value
+        if lecturer2 is not None:
+            room_value = self.sheet.cell(row=row, column=col + 8).value
+            room = room_value if room_value is not None else self.sheet.cell(row=4, column=col + 8).value
+            disciplines.append(DisciplineType(number, name, study_group, lecturer2, room))
 
     def add_disciplines(self, date_cell: Cell) -> list:
         row, col = date_cell.row, date_cell.column + 4
@@ -65,7 +67,6 @@ class ExcelApi:
             return res_disciplines
 
         for discipline in self.disciplines[date]['disciplines']:
-            for disc_lecturer in discipline.lecturers:
-                if disc_lecturer == lecturer:
-                    res_disciplines.append(discipline)
+            if discipline.lecturer == lecturer:
+                res_disciplines.append(discipline)
         return res_disciplines
