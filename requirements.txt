@@ -1,0 +1,2 @@
+openpyxl==3.0.9
+auto-py-to-exe==2.13.0
