@@ -47,7 +47,7 @@ class Window:
         excel_file_btn.place(width=150, height=30, x=10, y=60)
         self.excel_file_btn = excel_file_btn
 
-        excel_file_lbl = Label(window, text='Документ не выбран', font=('Arial Bold', 16), fg='red')
+        excel_file_lbl = Label(window, text='Документ не выбран', font=('Lucida Console', 14), fg='red')
         excel_file_lbl.place(width=200, height=30, x=180, y=60)
         self.excel_file_lbl = excel_file_lbl
 
@@ -105,13 +105,23 @@ class Window:
             self.find_by_lecturer_btn.configure(state=DISABLED)
             self.lecturer_entry.configure(state=DISABLED)
         else:
-            self.find_by_lecturer_btn.configure(state=NORMAL)
-            self.lecturer_entry.configure(state=NORMAL)
             self.api = ExcelApi(self.excel_file_path)
 
             filename = self.excel_file_path.split('/')[-1]
-            self.excel_file_lbl.configure(text=f"{filename} [Лист: {self.api.sheet.title}]",
-                                          font=("Arial Bold", 14), fg='green', justify='left')
+
+            if self.api.sheet is None:
+                self.find_by_lecturer_btn.configure(state=DISABLED)
+                self.lecturer_entry.configure(state=DISABLED)
+
+                text = f"{filename} [Подходящий лист не найден]"
+                self.excel_file_lbl.configure(text=text, font=('Lucida Console', 14), fg='red', justify='left')
+            else:
+                self.find_by_lecturer_btn.configure(state=NORMAL)
+                self.lecturer_entry.configure(state=NORMAL)
+
+                text = f"{filename} [Лист: {self.api.sheet.title}]"
+                self.excel_file_lbl.configure(text=text,font=('Lucida Console', 14), fg='green', justify='left')
+            self.excel_file_lbl.place(width=round(len(text) * 11.2), height=30, x=180, y=60)
 
     def find_by_lecturer(self):
         # remove added disciplines
