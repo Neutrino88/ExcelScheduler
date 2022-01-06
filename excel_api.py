@@ -9,16 +9,27 @@ DisciplineType = namedtuple('Discipline', 'number name study_group lecturer room
 
 
 class ExcelApi:
-    SHEET_NAME = '30'
-
     def __init__(self, filename):
         self.wb = load_workbook(filename, data_only=True)
-        self.sheet = self.wb.get_sheet_by_name(self.SHEET_NAME)
+        self.sheet = self.get_special_sheet(self.wb)
 
-        self.disciplines = self.get_dates_with_disciplines(self.sheet)
+        if self.sheet is not None:
+            self.disciplines = self.get_dates_with_disciplines(self.sheet)
+        else:
+            self.disciplines = {}
 
     @staticmethod
-    def get_dates_with_disciplines(sheet):
+    def get_special_sheet(workbook):
+        for sheet_name in workbook.sheetnames:
+            sheet = workbook.get_sheet_by_name(sheet_name)
+
+            if sheet.cell(row=1, column=1).value is not None:
+                for i in range(1, 1200):
+                    if isinstance(sheet.cell(row=i, column=1).value, datetime):
+                        return sheet
+
+    @staticmethod
+    def get_dates_with_disciplines(sheet) -> dict:
         disciplines = {}
         for i in range(1, 1200):
             cell = sheet.cell(row=i, column=1)

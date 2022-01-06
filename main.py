@@ -110,7 +110,8 @@ class Window:
             self.api = ExcelApi(self.excel_file_path)
 
             filename = self.excel_file_path.split('/')[-1]
-            self.excel_file_lbl.configure(text=filename, font=("Arial Bold", 14), fg='green', justify='left')
+            self.excel_file_lbl.configure(text=f"{filename} [Лист: {self.api.sheet.title}]",
+                                          font=("Arial Bold", 14), fg='green', justify='left')
 
     def find_by_lecturer(self):
         # remove added disciplines
